@@ -1,5 +1,11 @@
+require 'active_record'
+require 'active_delegate'
 require 'active_permalink/version'
 
 module ActivePermalink
-  # Your code goes here...
+  class << self
+    def setup(&block)
+      yield
+    end
+  end
 end
