@@ -4,7 +4,7 @@ Add SEO friendly permalinks to ActiveRecord model with history support.
 
 [![Gem Version](https://badge.fury.io/rb/active_permalink.svg)](https://badge.fury.io/rb/active_permalink)
 [![Build Status](https://travis-ci.org/hardpixel/active-permalink.svg?branch=master)](https://travis-ci.org/hardpixel/active-permalink)
-[![Maintainability](https://api.codeclimate.com/v1/badges/4447eb1a073a93ace5b2/maintainability)](https://codeclimate.com/github/hardpixel/active-permalink/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/7669a285b9da35143c1f/maintainability)](https://codeclimate.com/github/hardpixel/active-permalink/maintainability)
 
 ## Installation
 
