@@ -9,17 +9,25 @@ module ActivePermalink
       @scope     = options[:scope]
     end
 
+    def slug_candidates
+      @new_value.present? ? @new_value : @record.send(@field)
+    end
+
+    def slug_from_column
+      slug_candidates.to_slug.normalize.to_s
+    end
+
     def deactivate_old_permalink
       unless @record.active_permalink.new_record?
         parameters = { slug: @old_value, active: true }
-        permalink  = @record.previous_permalinks.rewhere(parameters).first
+        permalink  = @record.old_permalinks.rewhere(parameters).first
 
         permalink.update_column(:active, false) unless permalink.nil?
       end
     end
 
     def reassign_old_permalink
-      permalink = @record.previous_permalinks.find_by(slug: @new_value)
+      permalink = @record.old_permalinks.find_by(slug: slug_from_column)
 
       unless permalink.nil?
         permalink.update(active: true)
@@ -28,7 +36,7 @@ module ActivePermalink
     end
 
     def build_new_permalink
-      @record.build_active_permalink(slug: @new_value, scope: @scope, active: true)
+      @record.build_active_permalink(slug: slug_from_column, scope: @scope, active: true)
     end
 
     def new_permalink
