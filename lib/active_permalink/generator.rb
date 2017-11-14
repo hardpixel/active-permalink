@@ -6,7 +6,7 @@ module ActivePermalink
       @old_value = old_value
       @new_value = new_value
       @options   = options
-      @scope     = options[:scope]
+      @scope     = options.fetch :scope, :global
     end
 
     def slug_candidates
