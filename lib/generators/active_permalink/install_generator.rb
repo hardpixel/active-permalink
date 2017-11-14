@@ -13,10 +13,6 @@ module ActivePermalink
       migration_template 'migration.rb', 'db/migrate/create_permalinks.rb'
     end
 
-    def create_config_file
-      template 'initializer.rb', 'config/initializers/active_permalink.rb'
-    end
-
     def self.next_migration_number(dirname)
       ::ActiveRecord::Generators::Base.next_migration_number(dirname)
     end

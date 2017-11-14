@@ -10,6 +10,7 @@ class CreatePermalinks < ActiveRecord::Migration[5.0]
       t.timestamps
     end
 
-    add_index :permalinks, [:sluggable_id, :sluggable_type, :slug, :scope], unique: true, name: :index_permalinks_on_sluggable_attribute
+    add_index :permalinks, [:scope, :slug], unique: true
+    add_index :permalinks, [:sluggable_id, :sluggable_type], name: :index_permalinks_on_sluggable_attribute
   end
 end
