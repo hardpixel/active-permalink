@@ -15,7 +15,18 @@ module ActivePermalink
     end
 
     def slug_from_column
-      slug_candidates.to_slug.normalize(transliterations: @translit).to_s
+      @column_slug ||= slug_candidates.to_slug.normalize(transliterations: @translit).to_s
+    end
+
+    def scope_unique_slug
+      unique = slug_from_column
+      index  = 1
+
+      while not Permalink.where(scope: @scope, slug: unique).count.zero?
+        unique = "#{slug_from_column}-#{(index += 1)}"
+      end
+
+      unique
     end
 
     def deactivate_old_permalink
@@ -37,7 +48,7 @@ module ActivePermalink
     end
 
     def build_new_permalink
-      @record.build_active_permalink(slug: slug_from_column, scope: @scope, active: true)
+      @record.build_active_permalink(slug: scope_unique_slug, scope: @scope, active: true)
     end
 
     def new_permalink
