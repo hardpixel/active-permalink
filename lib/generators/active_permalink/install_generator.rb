@@ -10,15 +10,11 @@ module ActivePermalink
     source_root File.expand_path('../templates', __FILE__)
 
     def create_migration_file
-      migration_template 'migration/migration.rb', 'db/migrate/create_permalinks.rb'
+      migration_template 'migration.rb', 'db/migrate/create_permalinks.rb'
     end
 
     def create_config_file
-      template 'initializer/initializer.rb', 'config/initializers/active_permalink.rb'
-    end
-
-    def create_model_file
-      template 'model/model.rb', 'app/models/permalink.rb'
+      template 'initializer.rb', 'config/initializers/active_permalink.rb'
     end
 
     def self.next_migration_number(dirname)
