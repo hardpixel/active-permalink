@@ -2,10 +2,6 @@ module ActivePermalink
   module Sluggable
     extend ActiveSupport::Concern
 
-    included do
-      attribute :found_by_slug, :string
-    end
-
     class_methods do
       def find_by_slug(value)
         _find_by_permalinks_slug(value)
@@ -29,8 +25,20 @@ module ActivePermalink
         end
     end
 
+    def found_by_slug
+      @found_by_slug
+    end
+
+    def found_by_slug=(value)
+      @found_by_slug = value
+    end
+
+    def found_by_slug?
+      !found_by_slug.nil?
+    end
+
     def needs_redirect?
-      found_by_slug != slug if found_by_slug?
+      found_by_slug? and found_by_slug != slug
     end
 
     def old_slugs
