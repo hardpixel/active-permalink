@@ -13,16 +13,16 @@ module ActivePermalink
 
       private
 
-        def _find_by_permalinks_slug(value, raise_error=false)
-          method = raise_error ? :find_by! : :find_by
-          record = includes(:permalinks).send(method, permalinks: { slug: value })
+      def _find_by_permalinks_slug(value, raise_error = false)
+        method = raise_error ? :find_by! : :find_by
+        record = includes(:permalinks).send(method, permalinks: { slug: value })
 
-          unless record.nil?
-            record.found_by_slug = value
-          end
-
-          record
+        unless record.nil?
+          record.found_by_slug = value
         end
+
+        record
+      end
     end
 
     def found_by_slug

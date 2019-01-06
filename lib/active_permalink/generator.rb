@@ -1,6 +1,6 @@
 module ActivePermalink
   class Generator
-    def initialize(record, field, old_value, new_value, options={})
+    def initialize(record, field, old_value, new_value, options = {})
       @record    = record
       @field     = field
       @old_value = old_value
