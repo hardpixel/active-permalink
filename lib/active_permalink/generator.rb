@@ -6,7 +6,6 @@ module ActivePermalink
       @old_value = old_value
       @new_value = new_value
       @options   = options
-      @translit  = options[:transliterations]
       @scope     = options.fetch :scope, :global
     end
 
@@ -15,7 +14,7 @@ module ActivePermalink
     end
 
     def slug_from_column
-      @column_slug ||= slug_candidates.to_slug.normalize(transliterations: @translit).to_s
+      @column_slug ||= slug_candidates.to_s.to_url
     end
 
     def scope_unique_slug
