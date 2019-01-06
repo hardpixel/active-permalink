@@ -9,7 +9,7 @@ module ActivePermalink
   # Autoload base modules
   autoload :Permalink
   autoload :Generator
-  autoload :Sluggable
+  autoload :Querying
   autoload :Loader
 end
 

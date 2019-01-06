@@ -5,7 +5,7 @@ module ActivePermalink
     class_methods do
       def has_permalink(field, options={})
         include ActiveDelegate
-        include Sluggable
+        include Querying
 
         assoc_opts = { as: :sluggable, class_name: 'ActivePermalink::Permalink', dependent: :destroy }
         has_many :permalinks, assoc_opts
