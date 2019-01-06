@@ -6,7 +6,6 @@ require 'active_permalink/version'
 module ActivePermalink
   extend ActiveSupport::Autoload
 
-  # Autoload base modules
   autoload :Permalink
   autoload :Generator
   autoload :Querying
