@@ -3,7 +3,7 @@ module ActivePermalink
     extend ActiveSupport::Concern
 
     class_methods do
-      def has_permalink(field, options={})
+      def has_permalink(field, options = {})
         include ActiveDelegate
         include Querying
 
