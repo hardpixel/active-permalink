@@ -35,7 +35,7 @@ module ActivePermalink
 
     def exists?(slug)
       params = localize(scope: @scope, slug: slug)
-      Permalink.exists?(params)
+      Permalink.where(params).count.zero?
     end
 
     def localize(**params)
