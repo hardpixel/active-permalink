@@ -3,25 +3,20 @@ module ActivePermalink
     extend ActiveSupport::Concern
 
     class_methods do
-      def find_by_slug(value)
-        _find_by_permalink_slug(value)
+      def permalink_locator
+        PermalinkLocator.new(self, permalink_options)
       end
 
-      def find_by_slug!(value)
-        _find_by_permalink_slug(value, true)
+      def with_slug(*args)
+        permalink_locator.scope(*args)
       end
 
-      private
+      def find_by_slug(*args)
+        permalink_locator.locate(*args)
+      end
 
-      def _find_by_permalink_slug(value, raise_error = false)
-        method = raise_error ? :find_by! : :find_by
-        record = includes(:permalinks).send(method, permalinks: { slug: value })
-
-        unless record.nil?
-          record.found_by_slug = value
-        end
-
-        record
+      def find_by_slug!(*args)
+        permalink_locator.locate!(*args)
       end
     end
 
@@ -34,7 +29,7 @@ module ActivePermalink
     end
 
     def found_by_slug?
-      !found_by_slug.nil?
+      found_by_slug.present?
     end
 
     def needs_redirect?
@@ -43,6 +38,51 @@ module ActivePermalink
 
     def old_slugs
       @old_slugs ||= old_permalinks.pluck(:slug)
+    end
+
+    class PermalinkLocator
+      attr_reader :model, :options
+
+      def initialize(model, options)
+        @model   = model
+        @options = options
+      end
+
+      def scope(value, locale: nil)
+        params = localize(slug: value, locale: locale)
+        model.includes(:permalinks).where(permalinks: params)
+      end
+
+      def locate(*args)
+        find_record(:find_by, *args)
+      end
+
+      def locate!(*args)
+        find_record(:find_by!, *args)
+      end
+
+      private
+
+      def localized?
+        options[:localized].present?
+      end
+
+      def locale_column
+        options[:locale_column]
+      end
+
+      def localize(locale: nil, **params)
+        params[locale_column] = (locale || I18n.locale) if localized?
+        params
+      end
+
+      def find_record(method, value, locale: nil)
+        params = localize(slug: value, locale: locale)
+        record = model.includes(:permalinks).send(method, permalinks: params)
+
+        record.found_by_slug = value if record.present?
+        record
+      end
     end
   end
 end
