@@ -68,12 +68,11 @@ module ActivePermalink
       end
     end
 
-    def slug_candidates
-      @new_value.present? ? @new_value : @record.send(@field)
-    end
-
     def slug_from_column
-      @column_slug ||= slug_candidates.to_s.to_url
+      @slug_from_column ||= begin
+        value = @new_value.presence || @record.send(@field)
+        value.to_s.to_url
+      end
     end
 
     def scope_unique_slug
