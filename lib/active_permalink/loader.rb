@@ -3,23 +3,39 @@ module ActivePermalink
     extend ActiveSupport::Concern
 
     class_methods do
-      def has_permalink(field, options = {})
+      def has_permalink(field, localized: false, locale_column: :locale, **options)
         include ActiveDelegate
-        include Querying
 
-        assoc_opts = { as: :sluggable, class_name: 'ActivePermalink::Permalink', dependent: :destroy }
-        has_many :permalinks, assoc_opts
-        has_many :old_permalinks, -> { where active: false }, assoc_opts
+        class_attribute :permalink_options
 
-        has_one :active_permalink, -> { where active: true }, assoc_opts.merge(autosave: true)
-        delegate_attribute :slug, :string, to: :active_permalink
+        self.permalink_options = options.merge(
+          field:         field,
+          localized:     localized,
+          locale_column: locale_column
+        )
 
-        before_save do |record|
-          if slug.blank? or slug_changed?
-            premalink_generator   = Generator.new(record, field, slug_was, slug, options)
-            self.active_permalink = premalink_generator.new_permalink
+        with_options(as: :sluggable, class_name: 'ActivePermalink::Permalink') do
+          has_many :permalinks,
+            dependent: :destroy,
+            autosave: true
+
+          has_many :old_permalinks,
+            -> { where active: false }
+
+          if localized
+            has_one :active_permalink,
+              -> { where active: true, locale_column => I18n.locale }
+          else
+            has_one :active_permalink,
+              -> { where active: true }
           end
         end
+
+        delegate_attribute :slug, :string,
+          to: :active_permalink
+
+        include Persistence
+        include Querying
       end
     end
   end
