@@ -50,7 +50,7 @@ module ActivePermalink
 
       def scope(value, locale: nil)
         params = localize(slug: value, locale: locale)
-        model.includes(:permalinks).where(permalinks: params)
+        model.joins(:permalinks).where(permalinks: params)
       end
 
       def locate(*args)
@@ -78,7 +78,7 @@ module ActivePermalink
 
       def find_record(method, value, locale: nil)
         params = localize(slug: value, locale: locale)
-        record = model.includes(:permalinks).send(method, permalinks: params)
+        record = model.joins(:permalinks).send(method, permalinks: params)
 
         record.found_by_slug = value if record.present?
         record
