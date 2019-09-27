@@ -52,9 +52,13 @@ module ActivePermalink
 
       private
 
+      def locale_column
+        @options[:locale_column]
+      end
+
       def find_permalink(locale)
         permalinks.find do |permalink|
-          permalink.locale == locale.to_s
+          permalink.send(locale_column) == locale.to_s
         end
       end
 
