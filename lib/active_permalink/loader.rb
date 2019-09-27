@@ -20,14 +20,14 @@ module ActivePermalink
             autosave: true
 
           has_many :old_permalinks,
-            -> { where active: false }
+            -> { inactive }
 
           if localized
             has_one :active_permalink,
-              -> { where active: true, locale_column => I18n.locale }
+              -> { active.where(locale_column => I18n.locale) }
           else
             has_one :active_permalink,
-              -> { where active: true }
+              -> { active }
           end
         end
 

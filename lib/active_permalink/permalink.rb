@@ -4,7 +4,9 @@ module ActivePermalink
 
     default_scope { order created_at: :desc }
 
-    scope :global, -> { where scope: :global }
+    scope :global,   -> { where scope: :global }
+    scope :active,   -> { where active: true }
+    scope :inactive, -> { where active: false }
 
     belongs_to :sluggable, polymorphic: true, optional: true
   end
