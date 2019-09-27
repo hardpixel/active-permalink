@@ -7,6 +7,10 @@ module ActivePermalink
         self.slug = nil
       end
 
+      after_update do
+        permalinks.reload
+      end
+
       def slug=(value)
         generator = Generator.new(self, permalink_options)
         generator.generate(value)
