@@ -9,6 +9,7 @@ module ActivePermalink
   autoload :Permalink
   autoload :Generator
   autoload :Persistence
+  autoload :Localizer
   autoload :Querying
   autoload :Loader
 end

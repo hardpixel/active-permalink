@@ -23,6 +23,9 @@ module ActivePermalink
             -> { inactive }
 
           if localized
+            has_many :active_permalinks,
+              -> { active }
+
             has_one :active_permalink,
               -> { active.where(locale_column => I18n.locale) }
           else
@@ -36,6 +39,7 @@ module ActivePermalink
 
         include Persistence
         include Querying
+        include Localizer if localized
       end
     end
   end
