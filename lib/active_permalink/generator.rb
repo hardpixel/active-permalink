@@ -9,7 +9,7 @@ module ActivePermalink
 
     def generate(new_value)
       @new_value = new_value
-      return if new_value == active_permalink.try(:slug)
+      return unless changed?
 
       deactivate_active_permalink
       assign_active_permalink
@@ -23,6 +23,10 @@ module ActivePermalink
 
     def locale
       I18n.locale.to_s
+    end
+
+    def changed?
+      @new_value.blank? || @new_value != active_permalink.try(:slug)
     end
 
     def localized?
