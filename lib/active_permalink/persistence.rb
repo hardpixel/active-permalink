@@ -3,8 +3,8 @@ module ActivePermalink
     extend ActiveSupport::Concern
 
     included do
-      before_validation do
-        self.slug = self[:slug]
+      before_validation on: :create do
+        self.slug = slug
       end
 
       after_update do
