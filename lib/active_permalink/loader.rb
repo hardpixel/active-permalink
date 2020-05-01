@@ -3,13 +3,14 @@ module ActivePermalink
     extend ActiveSupport::Concern
 
     class_methods do
-      def has_permalink(field, localized: false, locale_column: :locale, **options)
+      def has_permalink(field, querying: true, localized: false, locale_column: :locale, **options)
         include ActiveDelegate
 
         class_attribute :permalink_options
 
         self.permalink_options = options.reverse_merge(
           field:            field,
+          querying:         querying,
           localized:        localized,
           locale_column:    locale_column,
           locale_accessors: true
@@ -39,7 +40,8 @@ module ActivePermalink
           to: :active_permalink
 
         include Persistence
-        include Querying
+
+        include Querying  if querying
         include Localizer if localized
       end
     end
