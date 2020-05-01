@@ -36,10 +36,6 @@ module ActivePermalink
       found_by_slug? && found_by_slug != slug
     end
 
-    def old_slugs
-      @old_slugs ||= old_permalinks.pluck(:slug)
-    end
-
     class PermalinkLocator
       attr_reader :model, :options
 

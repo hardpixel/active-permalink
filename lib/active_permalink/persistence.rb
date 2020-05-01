@@ -14,6 +14,10 @@ module ActivePermalink
       def slug=(value)
         Generator.generate(self, value)
       end
+
+      def old_slugs
+        @old_slugs ||= old_permalinks.pluck(:slug)
+      end
     end
   end
 end
