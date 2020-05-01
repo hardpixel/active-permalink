@@ -1,6 +1,20 @@
 module ActivePermalink
   class Generator
+    class << self
+      def generate(record, value, locale = nil)
+        return if value.nil? && !record.new_record?
+
+        options   = record.permalink_options.merge(locale: locale)
+        generator = Generator.new(record, options)
+        generator.generate(value)
+
+        record.permalinks = generator.permalinks
+      end
+    end
+
     def initialize(record, options = {})
+      options[:locale] = options.fetch(:locale, I18n.locale).to_s
+
       @record  = record
       @options = options
       @field   = options[:field]
@@ -22,7 +36,7 @@ module ActivePermalink
     private
 
     def locale
-      I18n.locale.to_s
+      @options[:locale]
     end
 
     def changed?

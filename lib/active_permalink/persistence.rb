@@ -12,12 +12,7 @@ module ActivePermalink
       end
 
       def slug=(value)
-        return if value.nil? && !new_record?
-
-        generator = Generator.new(self, permalink_options)
-        generator.generate(value)
-
-        self.permalinks = generator.permalinks
+        Generator.generate(self, value)
       end
     end
   end
