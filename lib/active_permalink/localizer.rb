@@ -3,51 +3,54 @@ module ActivePermalink
     extend ActiveSupport::Concern
 
     included do
-      def permalink_reader
-        PermalinkReader.new(permalinks, permalink_options)
+      def slug_backend
+        @slug_backend ||= PermalinkBackend.new(self)
       end
 
+      alias permalink_reader slug_backend
+
       def slug?
-        permalink_reader.exists?
+        slug_backend.exists?(I18n.locale)
       end
 
       def slug
-        permalink_reader.value
+        slug_backend.read(I18n.locale)
+      end
+
+      def slug=(value)
+        slug_backend.write(value, I18n.locale)
       end
 
       I18n.available_locales.each do |locale|
-        define_method(:"slug_#{locale}?") do
-          I18n.with_locale(locale) { slug? }
-        end
-
-        define_method(:"slug_#{locale}") do
-          I18n.with_locale(locale) { slug }
-        end
-
-        define_method(:"slug_#{locale}=") do |value|
-          I18n.with_locale(locale) { send(:slug=, value) }
-        end
+        define_method(:"slug_#{locale}?") { slug_backend.exists?(locale) }
+        define_method(:"slug_#{locale}")  { slug_backend.read(locale) }
+        define_method(:"slug_#{locale}=") { |value| slug_backend.write(value, locale) }
       end
     end
 
-    class PermalinkReader
-      attr_reader :permalinks, :options
+    class PermalinkBackend
+      attr_reader :record, :permalinks, :options
 
-      def initialize(permalinks, options)
-        @permalinks = permalinks
-        @options    = options
+      def initialize(record)
+        @record     = record
+        @options    = record.permalink_options
+        @permalinks = record.permalinks.to_a
       end
 
       def fallbacks?
         options[:fallbacks].present?
       end
 
-      def exists?
-        find_permalink(I18n.locale).present?
+      def exists?(locale)
+        find_permalink(locale).present?
       end
 
-      def value
-        find_slug(I18n.locale)
+      def read(locale)
+        find_slug(locale)
+      end
+
+      def write(value, locale)
+        update_slug(value, locale)
       end
 
       private
@@ -56,24 +59,16 @@ module ActivePermalink
         @options[:locale_column]
       end
 
-      def find_permalink(locale)
-        permalinks.find do |permalink|
-          permalink.send(locale_column) == locale.to_s &&
-            permalink.active?
+      def find_permalink(*locales)
+        permalinks.select(&:active?).find do |permalink|
+          locale = permalink.send(locale_column)
+          locales.include?(locale.to_sym)
         end
       end
 
       def find_fallback(locale)
-        fallbacks = I18n.try(:fallbacks) || {}
-        fallbacks = fallbacks.fetch(locale, [I18n.default_locale])
-        permalink = nil
-
-        fallbacks.find do |fallback|
-          permalink = find_permalink(fallback)
-          permalink.present?
-        end
-
-        permalink
+        locales = I18n.fallbacks[locale]
+        find_permalink(*locales) if locales.present?
       end
 
       def find_slug(locale)
@@ -81,6 +76,11 @@ module ActivePermalink
         permalink = find_fallback(locale) if permalink.blank?
 
         permalink.try(:slug)
+      end
+
+      def update_slug(value, locale)
+        Generator.generate(record, value, locale)
+        @permalinks = record.permalinks.to_a
       end
     end
   end
