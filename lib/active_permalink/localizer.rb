@@ -58,7 +58,8 @@ module ActivePermalink
 
       def find_permalink(locale)
         permalinks.find do |permalink|
-          permalink.send(locale_column) == locale.to_s
+          permalink.send(locale_column) == locale.to_s &&
+            permalink.active?
         end
       end
 
