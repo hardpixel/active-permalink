@@ -8,10 +8,11 @@ module ActivePermalink
 
         class_attribute :permalink_options
 
-        self.permalink_options = options.merge(
-          field:         field,
-          localized:     localized,
-          locale_column: locale_column
+        self.permalink_options = options.reverse_merge(
+          field:            field,
+          localized:        localized,
+          locale_column:    locale_column,
+          locale_accessors: true
         )
 
         with_options(as: :sluggable, class_name: 'ActivePermalink::Permalink') do

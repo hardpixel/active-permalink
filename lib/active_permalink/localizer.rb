@@ -21,10 +21,8 @@ module ActivePermalink
         slug_backend.write(value, I18n.locale)
       end
 
-      I18n.available_locales.each do |locale|
-        define_method(:"slug_#{locale}?") { slug_backend.exists?(locale) }
-        define_method(:"slug_#{locale}")  { slug_backend.read(locale) }
-        define_method(:"slug_#{locale}=") { |value| slug_backend.write(value, locale) }
+      if permalink_options[:locale_accessors]
+        include SlugLocaleAccessors
       end
     end
 
@@ -81,6 +79,18 @@ module ActivePermalink
       def update_slug(value, locale)
         Generator.generate(record, value, locale)
         @permalinks = record.permalinks.to_a
+      end
+    end
+
+    module SlugLocaleAccessors
+      extend ActiveSupport::Concern
+
+      included do
+        I18n.available_locales.each do |locale|
+          define_method(:"slug_#{locale}?") { slug_backend.exists?(locale) }
+          define_method(:"slug_#{locale}")  { slug_backend.read(locale) }
+          define_method(:"slug_#{locale}=") { |value| slug_backend.write(value, locale) }
+        end
       end
     end
   end
