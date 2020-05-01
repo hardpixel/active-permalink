@@ -3,6 +3,10 @@ module ActivePermalink
     extend ActiveSupport::Concern
 
     included do
+      before_validation on: :update, unless: :slug? do
+        self.slug = ''
+      end
+
       def slug_backend
         @slug_backend ||= PermalinkBackend.new(self)
       end
