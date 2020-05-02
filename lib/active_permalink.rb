@@ -12,6 +12,17 @@ module ActivePermalink
   autoload :Localizer
   autoload :Querying
   autoload :Loader
+  autoload :Config
+
+  class << self
+    def config
+      @config ||= Config.new
+    end
+
+    def setup
+      yield config
+    end
+  end
 end
 
 ActiveSupport.on_load(:active_record) do
