@@ -2,7 +2,7 @@ module ActivePermalink
   class Generator
     class << self
       def generate(record, value, locale = nil)
-        return if value.nil? && !record.new_record?
+        return if value.nil? && !record.slug_should_generate?
 
         options   = record.permalink_options.merge(locale: locale)
         generator = Generator.new(record, options)

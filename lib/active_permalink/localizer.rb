@@ -3,10 +3,6 @@ module ActivePermalink
     extend ActiveSupport::Concern
 
     included do
-      before_validation on: :update, unless: :slug? do
-        self.slug = ''
-      end
-
       def slug_backend
         @slug_backend ||= PermalinkBackend.new(self)
       end
@@ -21,12 +17,14 @@ module ActivePermalink
         slug_backend.read(I18n.locale)
       end
 
-      def slug=(value)
-        slug_backend.write(value, I18n.locale)
-      end
-
       if permalink_options[:locale_accessors]
         include SlugLocaleAccessors
+      end
+
+      private
+
+      def _generate_permalink_slug(value)
+        slug_backend.write(value, I18n.locale)
       end
     end
 
