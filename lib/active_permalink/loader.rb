@@ -4,7 +4,6 @@ module ActivePermalink
 
     class_methods do
       def has_permalink(field, querying: true, localized: false, locale_column: :locale, **options)
-        include ActiveDelegate
 
         class_attribute :permalink_options
 
@@ -35,9 +34,6 @@ module ActivePermalink
               -> { active }
           end
         end
-
-        delegate_attribute :slug, :string,
-          to: :active_permalink
 
         include Persistence
 

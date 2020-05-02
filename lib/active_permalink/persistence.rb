@@ -3,6 +3,11 @@ module ActivePermalink
     extend ActiveSupport::Concern
 
     included do
+      include ActiveDelegate
+
+      delegate_attribute :slug, :string,
+        to: :active_permalink
+
       before_validation :slug_should_generate!,
         on: [:create, :update],
         unless: :slug?
