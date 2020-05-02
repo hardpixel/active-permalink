@@ -3,19 +3,13 @@ module ActivePermalink
     extend ActiveSupport::Concern
 
     class_methods do
-      def has_permalink(field, querying: true, localized: false, locale_column: :locale, **options)
+      def has_permalink(field, **options)
+        options = ActivePermalink.config.options_for(field: field, **options)
 
         class_attribute :permalink_options
+        self.permalink_options = options
 
-        self.permalink_options = options.reverse_merge(
-          field:            field,
-          querying:         querying,
-          localized:        localized,
-          locale_column:    locale_column,
-          locale_accessors: true
-        )
-
-        with_options(as: :sluggable, class_name: 'ActivePermalink::Permalink') do
+        with_options(as: :sluggable, class_name: options[:class_name]) do
           has_many :permalinks,
             dependent: :destroy,
             autosave: true
@@ -23,12 +17,12 @@ module ActivePermalink
           has_many :old_permalinks,
             -> { inactive }
 
-          if localized
+          if options[:localized]
             has_many :active_permalinks,
               -> { active }
 
             has_one :active_permalink,
-              -> { active.where(locale_column => I18n.locale) }
+              -> { active.where(options[:locale_column] => I18n.locale) }
           else
             has_one :active_permalink,
               -> { active }
@@ -37,8 +31,8 @@ module ActivePermalink
 
         include Persistence
 
-        include Querying  if querying
-        include Localizer if localized
+        include Querying  if options[:querying]
+        include Localizer if options[:localized]
       end
     end
   end
