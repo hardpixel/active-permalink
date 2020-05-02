@@ -91,9 +91,17 @@ module ActivePermalink
 
       included do
         I18n.available_locales.each do |locale|
-          define_method(:"slug_#{locale}?") { slug_backend.exists?(locale) }
-          define_method(:"slug_#{locale}")  { slug_backend.read(locale) }
-          define_method(:"slug_#{locale}=") { |value| slug_backend.write(value, locale) }
+          define_method(:"slug_#{locale}?") do
+            slug_backend.exists?(locale)
+          end
+
+          define_method(:"slug_#{locale}") do
+            slug_backend.read(locale)
+          end
+
+          define_method(:"slug_#{locale}=") do |value|
+            slug_backend.write(value, locale)
+          end
         end
       end
     end
