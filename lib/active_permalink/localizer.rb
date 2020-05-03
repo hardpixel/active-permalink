@@ -23,6 +23,8 @@ module ActivePermalink
 
       if permalink_options[:locale_accessors]
         include SlugLocaleAccessors
+      elsif permalink_options[:fallthrough_accessors]
+        include SlugFallthroughAccessors
       end
 
       private
@@ -117,6 +119,28 @@ module ActivePermalink
           define_method(:"slug_#{locale}=") do |value|
             slug_backend.write(value, locale)
           end
+        end
+      end
+    end
+
+    module SlugFallthroughAccessors
+      extend ActiveSupport::Concern
+
+      included do
+        method_name_regex = /\Aslug_([a-z]{2}(_[a-z]{2})?)(=?|\??)\z/.freeze
+
+        define_method :method_missing do |method_name, *arguments, **options, &block|
+          if method_name =~ method_name_regex
+            locale, suffix = $1.split('_')
+            locale = "#{locale}-#{suffix.upcase}" if suffix
+            public_send("slug#{$3}", *arguments, **options, locale: locale.to_sym)
+          else
+            super(method_name, *arguments, &block)
+          end
+        end
+
+        define_method :respond_to_missing? do |method_name, include_private = false|
+          (method_name =~ method_name_regex) || super(method_name, include_private)
         end
       end
     end

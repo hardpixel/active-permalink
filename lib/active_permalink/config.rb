@@ -9,16 +9,18 @@ module ActivePermalink
     config_accessor(:localized) { false }
     config_accessor(:locale_column) { :locale }
     config_accessor(:locale_accessors) { true }
+    config_accessor(:fallthrough_accessors) { false }
     config_accessor(:fallbacks) { false }
 
     def options_for(**options)
       options.reverse_merge(
-        class_name:       class_name,
-        querying:         querying,
-        localized:        localized,
-        locale_column:    locale_column,
-        locale_accessors: locale_accessors,
-        fallbacks:        fallbacks
+        class_name:            class_name,
+        querying:              querying,
+        localized:             localized,
+        locale_column:         locale_column,
+        locale_accessors:      locale_accessors,
+        fallthrough_accessors: fallthrough_accessors,
+        fallbacks:             fallbacks
       )
     end
   end
