@@ -10,7 +10,7 @@ module ActivePermalink
 
       before_validation :slug_should_generate!,
         on: [:create, :update],
-        unless: :slug?
+        if: :slug_needs_generate?
 
       def slug=(value)
         _generate_permalink_slug(value)
@@ -25,6 +25,10 @@ module ActivePermalink
       end
 
       private
+
+      def slug_needs_generate?
+        !slug? && send(:"#{permalink_options[:field]}_changed?")
+      end
 
       def slug_should_generate!
         @slug_should_generate = true
