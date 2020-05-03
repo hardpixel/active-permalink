@@ -9,12 +9,16 @@ module ActivePermalink
 
       alias permalink_reader slug_backend
 
-      def slug?
-        slug_backend.exists?(I18n.locale)
+      def slug?(locale: nil)
+        slug_backend.exists?(locale || I18n.locale)
       end
 
-      def slug
-        slug_backend.read(I18n.locale)
+      def slug(locale: nil)
+        slug_backend.read(locale || I18n.locale)
+      end
+
+      def slug=(value, locale: nil)
+        slug_backend.write(value, locale || I18n.locale)
       end
 
       if permalink_options[:locale_accessors]
