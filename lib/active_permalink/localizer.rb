@@ -32,6 +32,9 @@ module ActivePermalink
       end
     end
 
+    class InvalidLocale < I18n::InvalidLocale
+    end
+
     class PermalinkBackend
       attr_reader :record, :permalinks, :options
 
@@ -46,18 +49,28 @@ module ActivePermalink
       end
 
       def exists?(locale)
+        enforce_available_locales!(locale)
         find_permalink(locale).present?
       end
 
       def read(locale)
+        enforce_available_locales!(locale)
         find_slug(locale)
       end
 
       def write(value, locale)
+        enforce_available_locales!(locale)
         update_slug(value, locale)
       end
 
       private
+
+      def enforce_available_locales!(locale)
+        return unless I18n.enforce_available_locales
+        return if I18n.available_locales.include?(locale.to_sym)
+
+        raise InvalidLocale.new(locale)
+      end
 
       def locale_column
         @options[:locale_column]
