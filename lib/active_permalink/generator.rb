@@ -1,3 +1,5 @@
+require 'stringex_lite'
+
 module ActivePermalink
   class Generator
     class << self

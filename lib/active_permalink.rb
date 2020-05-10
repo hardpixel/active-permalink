@@ -1,4 +1,3 @@
-require 'stringex'
 require 'active_record'
 require 'active_delegate'
 require 'active_permalink/version'
