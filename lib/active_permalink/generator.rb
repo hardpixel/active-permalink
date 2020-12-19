@@ -1,4 +1,4 @@
-require 'stringex_lite'
+require 'any_ascii'
 
 module ActivePermalink
   class Generator
@@ -91,7 +91,10 @@ module ActivePermalink
     def slug_from_column
       @slug_from_column ||= begin
         value = @new_value.presence || @record.send(@field)
-        value.to_s.to_url
+        return if value.blank?
+
+        value = AnyAscii.transliterate(value)
+        value.parameterize
       end
     end
 
