@@ -29,8 +29,8 @@ module ActivePermalink
 
       private
 
-      def _generate_permalink_slug(value)
-        slug_backend.write(value, I18n.locale)
+      def _generate_permalink_slug(value, **options)
+        slug_backend.write(value, I18n.locale, **options)
       end
     end
 
@@ -60,9 +60,9 @@ module ActivePermalink
         find_slug(locale)
       end
 
-      def write(value, locale)
+      def write(value, locale, **options)
         enforce_available_locales!(locale)
-        update_slug(value, locale)
+        update_slug(value, locale, **options)
       end
 
       private
@@ -97,8 +97,8 @@ module ActivePermalink
         permalink.try(:slug)
       end
 
-      def update_slug(value, locale)
-        Generator.generate(record, value, locale)
+      def update_slug(value, locale, **options)
+        Generator.generate(record, value, locale, **options)
         @permalinks = record.permalinks.to_a
       end
     end

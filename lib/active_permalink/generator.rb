@@ -3,10 +3,10 @@ require 'any_ascii'
 module ActivePermalink
   class Generator
     class << self
-      def generate(record, value, locale = nil)
+      def generate(record, value, locale = nil, raw: false)
         return if value.nil? && !record.slug_should_generate?
 
-        options   = record.permalink_options.merge(locale: locale)
+        options   = record.permalink_options.merge(locale: locale, raw: raw)
         generator = Generator.new(record, options)
         generator.generate(value)
 
@@ -92,6 +92,8 @@ module ActivePermalink
       @slug_from_column ||= begin
         value = @new_value.presence || @record.send(@field)
         return if value.blank?
+
+        return value if @options[:raw] == true
 
         value = AnyAscii.transliterate(value)
         value.parameterize

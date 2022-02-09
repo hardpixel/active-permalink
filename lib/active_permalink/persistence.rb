@@ -12,6 +12,10 @@ module ActivePermalink
         on: [:create, :update],
         if: :slug_needs_generate?
 
+      def raw_slug=(value)
+        _generate_permalink_slug(value, raw: true)
+      end
+
       def slug=(value)
         _generate_permalink_slug(value)
       end
@@ -37,8 +41,8 @@ module ActivePermalink
         @slug_should_generate = false
       end
 
-      def _generate_permalink_slug(value)
-        Generator.generate(self, value)
+      def _generate_permalink_slug(value, **options)
+        Generator.generate(self, value, **options)
       end
     end
   end
